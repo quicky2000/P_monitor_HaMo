@@ -18,6 +18,7 @@ https://www.logre.eu/wiki/Projet_Monitor_HaMo
 
 # Subtrees
 #----------
+git@github.com:quicky2000/monitor_HaMo.git
 git@github.com:quicky2000/quicky_tools.git
 git@github.com:quicky2000/parameter_manager.git
 git@github.com:quicky2000/url_reader.git
