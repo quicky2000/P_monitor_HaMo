@@ -1,0 +1,26 @@
+
+# Summary 
+#----------
+The aim of this project is to create an application to monitor information on citelib by HaMo website
+
+#- Setup project
+#----------------
+. setup.sh
+
+#- Build project
+#----------------
+. build.sh
+
+# Documentation
+#---------------
+The projet documentation is here : 
+https://www.logre.eu/wiki/Projet_Monitor_HaMo
+
+# Subtrees
+#----------
+git@github.com:quicky2000/quicky_tools.git
+git@github.com:quicky2000/parameter_manager.git
+git@github.com:quicky2000/url_reader.git
+git@github.com:quicky2000/quicky_exception.git
+git@github.com:quicky2000/EXT_libcurl.git
+#EOF
