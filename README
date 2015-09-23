@@ -23,5 +23,6 @@ git@github.com:quicky2000/quicky_tools.git
 git@github.com:quicky2000/parameter_manager.git
 git@github.com:quicky2000/url_reader.git
 git@github.com:quicky2000/quicky_exception.git
+git@github.com:quicky2000/json_kit.git
 git@github.com:quicky2000/EXT_libcurl.git
 #EOF
