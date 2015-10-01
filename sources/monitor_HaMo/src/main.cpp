@@ -18,7 +18,10 @@
 
 #include "monitor_HaMo.h"
 #include "quicky_exception.h"
+#include "global_station_info.h"
 #include <iostream>
+#include <chrono>
+#include <ctime>
 
 #ifndef WIN32
 #include <unistd.h>     /* getlogin */
@@ -72,7 +75,6 @@ void getpass2(std::string & p_passwd, const std::string & p_prompt)
 int main(int argc,char ** argv)
 {
   int l_status = 0;
-
   try
     {
       // Defining application command line parameters
@@ -96,11 +98,15 @@ int main(int argc,char ** argv)
       parameter_manager::parameter_if l_verbose_content_parameter("verbose-content",true);
       l_param_manager.add(l_verbose_content_parameter);
 
+      parameter_manager::parameter_if l_refresh_delay_parameter("refresh-delay",true);
+      l_param_manager.add(l_refresh_delay_parameter);
+
       // Treating parameters
       l_param_manager.treat_parameters(argc,argv);
       std::string l_user_name = l_user_name_parameter.value_set() ? l_user_name_parameter.get_value<std::string>() : "";
       std::string l_user_password = l_user_password_parameter.value_set() ? l_user_password_parameter.get_value<std::string>() : "";
 
+      unsigned int l_delay = l_refresh_delay_parameter.value_set() ? atoi(l_refresh_delay_parameter.get_value<std::string>().c_str()) : 60;
       if("" == l_user_password)
       {
         std::string l_prompt = "enter password for " + l_user_name + "\n";
@@ -173,7 +179,38 @@ int main(int argc,char ** argv)
       // get some data available only when connected
       std::cout << "-------------------------------------------------------------" << std::endl ;
       std::cout << "Get some data to check if we are logged" << std::endl ;
-      l_monitor.get_station_data();
+
+      monitor_HaMo::global_station_info l_info;
+      monitor_HaMo::global_station_info l_info2;
+      monitor_HaMo::global_station_info * l_current_info = &l_info;
+      monitor_HaMo::global_station_info * l_past_info = &l_info2;
+      while(1)
+	{
+	  std::chrono::time_point<std::chrono::system_clock> l_time = std::chrono::system_clock::now();
+	  std::time_t l_end_time = std::chrono::system_clock::to_time_t(l_time);
+	  std::string l_string_time = std::ctime(&l_end_time);
+	  l_string_time = l_string_time.substr(0,l_string_time.size() - 1);
+	  std::cout.flush();
+	  std::cout << "\r" << std::string(50,' ') << "\rCheck at " << l_string_time << "";
+	  std::cout.flush();
+
+	  l_monitor.get_station_data(*l_current_info);
+	  if(*l_current_info != *l_past_info)
+	    {
+	      std::cout << std::endl << "Changements observes :" << std::endl ;
+	      l_past_info->diff_report(std::cout,*l_current_info);
+	      std::cout << "Nouveau status : " << std::endl ;
+	      std::cout << *l_current_info << std::endl << std::endl ;
+	    }
+	  std::swap(l_current_info,l_past_info);
+
+#ifndef _WIN32
+	  sleep(l_delay);
+#else
+	  Sleep(1000*l_delay);
+#endif
+
+	}
     }
   catch(quicky_exception::quicky_runtime_exception & e)
     {
